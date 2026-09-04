@@ -1,13 +1,11 @@
 import { Link } from "react-router-dom";
 import type { Listing } from "../types";
 import { formatCurrency } from "../lib/format";
+import { PLACEHOLDER_IMAGE, handleImageError } from "../lib/image";
 import CountdownTimer from "./CountdownTimer";
 
-const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=800&auto=format";
-
 export default function AuctionCard({ listing }: { listing: Listing }) {
-  const image = listing.images?.[0] || FALLBACK_IMAGE;
+  const image = listing.images?.[0] || PLACEHOLDER_IMAGE;
   const subtitle =
     listing.category === "car"
       ? [listing.year, listing.make, listing.model].filter(Boolean).join(" ")
@@ -25,6 +23,7 @@ export default function AuctionCard({ listing }: { listing: Listing }) {
           src={image}
           alt={listing.title}
           loading="lazy"
+          onError={handleImageError}
           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
         />
         <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700 shadow">

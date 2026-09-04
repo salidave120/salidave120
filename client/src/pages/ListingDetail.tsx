@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../api";
 import type { Bid, Listing } from "../types";
 import { formatCurrency } from "../lib/format";
+import { PLACEHOLDER_IMAGE, handleImageError } from "../lib/image";
 import CountdownTimer from "../components/CountdownTimer";
 import { useAuth } from "../context/AuthContext";
 
@@ -80,9 +81,7 @@ export default function ListingDetail() {
     );
   }
 
-  const images = listing.images.length > 0 ? listing.images : [
-    "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=1200",
-  ];
+  const images = listing.images.length > 0 ? listing.images : [PLACEHOLDER_IMAGE];
 
   const isOwner = user?.id === listing.seller_id;
   const isActive = listing.status === "active";
@@ -102,7 +101,12 @@ export default function ListingDetail() {
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-            <img src={images[activeImage]} alt={listing.title} className="aspect-video w-full object-cover" />
+            <img
+              src={images[activeImage]}
+              alt={listing.title}
+              onError={handleImageError}
+              className="aspect-video w-full object-cover"
+            />
           </div>
           {images.length > 1 && (
             <div className="mt-3 flex gap-2">
@@ -114,7 +118,7 @@ export default function ListingDetail() {
                     idx === activeImage ? "border-amber-500" : "border-transparent"
                   }`}
                 >
-                  <img src={img} alt="" className="h-full w-full object-cover" />
+                  <img src={img} alt="" onError={handleImageError} className="h-full w-full object-cover" />
                 </button>
               ))}
             </div>

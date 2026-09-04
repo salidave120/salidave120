@@ -5,6 +5,21 @@ function hoursFromNow(h) {
   return new Date(Date.now() + h * 60 * 60 * 1000).toISOString();
 }
 
+function unsplash(id) {
+  return `https://images.unsplash.com/photo-${id}?w=1200&auto=format&fit=crop`;
+}
+
+// Reusable interior/detail shots so every listing shows more than one "place",
+// even when we don't have a second angle specific to that exact property or car.
+const HOUSE_LIVING_ROOM = unsplash("1493809842364-78817add7ffb");
+const HOUSE_KITCHEN = unsplash("1556911220-e15b29be8c8f");
+const HOUSE_BEDROOM = unsplash("1522708323590-d24dbb6b0267");
+const HOUSE_BATHROOM = unsplash("1584622650111-993a426fbf0a");
+const HOUSE_POOL_BACKYARD = unsplash("1600585154340-be6161a56a0c");
+
+const CAR_INTERIOR = unsplash("1502877338535-766e1452684a");
+const CAR_ON_ROAD = unsplash("1494976388531-d1058494cdd8");
+
 async function seed() {
   console.log("Seeding database...");
 
@@ -40,8 +55,9 @@ async function seed() {
         "Immaculate one-owner 911 Carrera S finished in GT Silver Metallic. Full service history, sport chrono package, and ceramic brakes. A true driver's car.",
       location: "Austin, TX",
       images: [
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200",
-        "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=1200",
+        unsplash("1503376780353-7e6692767b70"),
+        unsplash("1503736334956-4c8f8e92946d"),
+        CAR_INTERIOR,
       ],
       starting_price: 68000,
       bid_increment: 1000,
@@ -61,7 +77,9 @@ async function seed() {
         "Beadlock-capable wheels, FOX Live Valve shocks, and a 3.5L EcoBoost V6 producing 450hp. Garage kept, never off-roaded hard.",
       location: "Denver, CO",
       images: [
-        "https://images.unsplash.com/photo-1583267746897-2cf415887172?w=1200",
+        unsplash("1583267746897-2cf415887172"),
+        CAR_INTERIOR,
+        CAR_ON_ROAD,
       ],
       starting_price: 39000,
       bid_increment: 500,
@@ -81,7 +99,9 @@ async function seed() {
         "Dual motor AWD, 0-60 in 3.1s, full self-driving capability included. Recent tire replacement and new brake pads.",
       location: "San Jose, CA",
       images: [
-        "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=1200",
+        unsplash("1560958089-b8a1929cea89"),
+        CAR_INTERIOR,
+        CAR_ON_ROAD,
       ],
       starting_price: 28000,
       bid_increment: 500,
@@ -101,7 +121,9 @@ async function seed() {
         "Numbers-matching 396 big block, frame-off restoration completed in 2022. Turns heads everywhere it goes.",
       location: "Charlotte, NC",
       images: [
-        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200",
+        unsplash("1552519507-da3b142c6e3d"),
+        CAR_INTERIOR,
+        CAR_ON_ROAD,
       ],
       starting_price: 45000,
       bid_increment: 1000,
@@ -124,8 +146,11 @@ async function seed() {
         "Stunning 4-bed architectural home with floor-to-ceiling glass, a chef's kitchen, and an infinity pool overlooking the valley.",
       location: "Austin, TX",
       images: [
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200",
-        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200",
+        unsplash("1600596542815-ffad4c1539a9"),
+        unsplash("1600607687939-ce8a6c25118c"),
+        HOUSE_POOL_BACKYARD,
+        HOUSE_KITCHEN,
+        HOUSE_BEDROOM,
       ],
       starting_price: 850000,
       bid_increment: 5000,
@@ -145,7 +170,10 @@ async function seed() {
         "Industrial-chic 2-bed loft in a converted warehouse. Exposed brick, 14ft ceilings, and a private rooftop deck with skyline views.",
       location: "Chicago, IL",
       images: [
-        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200",
+        unsplash("1502672260266-1c1ef2d93688"),
+        HOUSE_KITCHEN,
+        HOUSE_BEDROOM,
+        HOUSE_BATHROOM,
       ],
       starting_price: 420000,
       bid_increment: 2500,
@@ -165,7 +193,10 @@ async function seed() {
         "Charming 3-bed cottage two blocks from the sand. Fully renovated in 2021 with a wraparound porch and outdoor shower.",
       location: "Charleston, SC",
       images: [
-        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200",
+        unsplash("1568605114967-8130f3a36994"),
+        HOUSE_LIVING_ROOM,
+        HOUSE_KITCHEN,
+        HOUSE_BEDROOM,
       ],
       starting_price: 560000,
       bid_increment: 5000,
@@ -185,7 +216,10 @@ async function seed() {
         "Log cabin retreat with vaulted great room, stone fireplace, and detached guest house. Bordered by national forest.",
       location: "Aspen, CO",
       images: [
-        "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=1200",
+        unsplash("1449844908441-8829872d2607"),
+        HOUSE_LIVING_ROOM,
+        HOUSE_KITCHEN,
+        HOUSE_BATHROOM,
       ],
       starting_price: 1200000,
       bid_increment: 10000,

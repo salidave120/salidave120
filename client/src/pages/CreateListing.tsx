@@ -14,11 +14,17 @@ function toLocalDateTimeInput(date: Date) {
   )}:${pad(date.getMinutes())}`;
 }
 
+const MAX_IMAGES = 8;
+
 export default function CreateListing() {
   const navigate = useNavigate();
   const [category, setCategory] = useState<Category>("car");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   const defaultEnds = toLocalDateTimeInput(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000));
 
@@ -26,7 +32,6 @@ export default function CreateListing() {
     title: "",
     description: "",
     location: "",
-    imagesText: "",
     startingPrice: "",
     bidIncrement: "100",
     reservePrice: "",
@@ -53,6 +58,34 @@ export default function CreateListing() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  async function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
+    e.target.value = "";
+    if (files.length === 0) return;
+
+    if (images.length + files.length > MAX_IMAGES) {
+      setImageError(`You can upload up to ${MAX_IMAGES} images.`);
+      return;
+    }
+
+    setImageError("");
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("images", file));
+      const res = await api.postForm<{ urls: string[] }>("/uploads", formData);
+      setImages((prev) => [...prev, ...res.urls]);
+    } catch (err) {
+      setImageError(err instanceof ApiError ? err.message : "Failed to upload images");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function removeImage(url: string) {
+    setImages((prev) => prev.filter((u) => u !== url));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -61,11 +94,6 @@ export default function CreateListing() {
       setError("Please fill in all required fields.");
       return;
     }
-
-    const images = form.imagesText
-      .split("\n")
-      .map((s) => s.trim())
-      .filter(Boolean);
 
     const payload: Record<string, unknown> = {
       category,
@@ -173,15 +201,45 @@ export default function CreateListing() {
             />
           </div>
           <div>
-            <label htmlFor="imagesText" className={labelClass}>Image URLs (one per line)</label>
-            <textarea
-              id="imagesText"
-              className={inputClass}
-              rows={3}
-              value={form.imagesText}
-              onChange={(e) => update("imagesText", e.target.value)}
-              placeholder="https://example.com/photo1.jpg"
-            />
+            <label htmlFor="images" className={labelClass}>
+              Photos ({images.length}/{MAX_IMAGES})
+            </label>
+            {images.length > 0 && (
+              <div className="mb-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
+                {images.map((url) => (
+                  <div key={url} className="group relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+                    <img src={url} alt="" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(url)}
+                      aria-label="Remove image"
+                      className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-slate-900/70 text-sm font-bold text-white opacity-0 transition group-hover:opacity-100"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {images.length < MAX_IMAGES && (
+              <label
+                htmlFor="images"
+                className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500 hover:border-amber-400 hover:text-amber-600"
+              >
+                {uploading ? "Uploading..." : "Click to upload photos, or drag and drop"}
+                <span className="mt-1 text-xs text-slate-400">JPEG, PNG, WEBP, or GIF — up to 8MB each</span>
+                <input
+                  id="images"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  multiple
+                  disabled={uploading}
+                  onChange={handleFilesSelected}
+                  className="hidden"
+                />
+              </label>
+            )}
+            {imageError && <p className="mt-1 text-sm text-rose-600">{imageError}</p>}
           </div>
         </section>
 
@@ -322,10 +380,10 @@ export default function CreateListing() {
 
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || uploading}
           className="w-full rounded-lg bg-amber-500 py-3 font-semibold text-white transition hover:bg-amber-600 disabled:opacity-50"
         >
-          {submitting ? "Publishing..." : "Publish Listing"}
+          {submitting ? "Publishing..." : uploading ? "Waiting for photo upload..." : "Publish Listing"}
         </button>
       </form>
     </div>

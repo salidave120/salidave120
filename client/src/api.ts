@@ -15,7 +15,7 @@ function getToken() {
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    ...(!(options.body instanceof FormData) && { "Content-Type": "application/json" }),
     ...(options.headers as Record<string, string> | undefined),
   };
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -34,6 +34,7 @@ export const api = {
   get: <T>(path: string) => request<T>(path),
   post: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined }),
+  postForm: <T>(path: string, formData: FormData) => request<T>(path, { method: "POST", body: formData }),
   del: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };
 

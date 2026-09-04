@@ -1,0 +1,17 @@
+{
+  "name": "gavel-and-key-auctions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack auction website for cars and houses",
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "seed": "npm run seed --prefix server",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "dev": "npm-run-all --parallel dev:server dev:client",
+    "build": "npm run build --prefix client"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
